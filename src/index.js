@@ -1,10 +1,8 @@
 import axios from 'axios';
-import SlimSelect from 'slim-select';
+import Notiflix from 'notiflix';
 
-// Dodanie nagłówka X-api-key do każdego żądania
-axios.defaults.headers.common['X-api-key'] =
+const API_KEY =
   'live_2RIcwtVYZb8CEj63AeIaMf1JSp0PXBNIdBuPqECM9ygUtkT4ANoIBNZx55QNUY48';
-
 const selectElement = document.querySelector('.breed-select');
 const loaderElement = document.querySelector('.loader');
 const errorElement = document.querySelector('.error');
@@ -21,23 +19,12 @@ async function fetchBreeds() {
     const response = await axios.get('https://api.thecatapi.com/v1/breeds');
     const breeds = response.data;
 
-    // Sprawdzenie, czy otrzymano dane
-    console.log(breeds);
-
     // Wypełnienie rozwijanej listy ras
-    const options = breeds.map(breed => ({
-      value: breed.id,
-      text: breed.name,
-    }));
-
-    // Sprawdzenie danych opcji
-    console.log(options);
-
-    // Utwórz nową instancję SlimSelect i przekaż dane
-    const slim = new SlimSelect('.breed-select', {
-      select: '.breed-select', // Wskaż, gdzie ma być wyświetlona rozwijana lista
-      placeholder: 'Choose a breed', // Opcjonalny tekst zastępczy
-      data: options,
+    breeds.forEach(breed => {
+      const option = document.createElement('option');
+      option.value = breed.id;
+      option.textContent = breed.name;
+      selectElement.appendChild(option);
     });
 
     // Ukrycie animacji ładowania po pomyślnym pobraniu listy ras
@@ -53,74 +40,33 @@ async function fetchBreeds() {
 // Inicjalizacja pobierania listy ras przy załadowaniu strony
 fetchBreeds();
 
-// // Funkcja do pobierania listy ras kotów
-// async function fetchBreeds() {
-//   try {
-//     // Wyświetlenie animacji ładowania
-//     loaderElement.style.display = 'block';
-//     errorElement.style.display = 'none';
-//     catInfoElement.style.display = 'none';
+// Funkcja do pobierania informacji o kocie na podstawie wybranej rasy
+async function fetchCatByBreed(breedId) {
+  try {
+    // Wyświetlenie animacji ładowania
+    loaderElement.style.display = 'block';
+    errorElement.style.display = 'none';
+    catInfoElement.style.display = 'none';
 
-//     const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-//     const breeds = response.data;
+    const response = await axios.get(
+      `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`
+    );
+    const catData = response.data[0];
 
-//     // Wypełnienie rozwijanej listy ras
-//     const options = breeds.map(breed => ({
-//       value: breed.id,
-//       text: breed.name,
-//     }));
+    // Wyświetlenie informacji o kocie
+    catInfoElement.innerHTML = `
+      <img src="${catData.url}" alt="Cat Image">
+      <p><strong>Breed:</strong> ${catData.breeds[0].name}</p>
+      <p><strong>Description:</strong> ${catData.breeds[0].description}</p>
+      <p><strong>Temperament:</strong> ${catData.breeds[0].temperament}</p>
+    `;
 
-//     // Utwórz nową instancję SlimSelect i przekaż dane
-//     const slim = new SlimSelect('.breed-select', {
-//       data: options,
-//     });
-
-//     // Ukrycie animacji ładowania po pomyślnym pobraniu listy ras
-//     loaderElement.style.display = 'none';
-//     selectElement.style.display = 'block';
-//   } catch (error) {
-//     // Wyświetlenie komunikatu błędu
-//     errorElement.style.display = 'block';
-//     console.error('Error fetching breeds:', error);
-//   }
-// }
-
-// // Funkcja do pobierania informacji o kocie na podstawie rasy
-// async function fetchCatByBreed(breedId) {
-//   try {
-//     // Wyświetlenie animacji ładowania
-//     loaderElement.style.display = 'block';
-//     errorElement.style.display = 'none';
-//     catInfoElement.style.display = 'none';
-
-//     const response = await axios.get(
-//       `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`
-//     );
-//     const cat = response.data[0];
-
-//     // Wyświetlenie informacji o kocie
-//     catInfoElement.innerHTML = `
-//       <img src="${cat.url}" alt="Cat" />
-//       <p><strong>Breed:</strong> ${cat.breeds[0].name}</p>
-//       <p><strong>Description:</strong> ${cat.breeds[0].description}</p>
-//       <p><strong>Temperament:</strong> ${cat.breeds[0].temperament}</p>
-//     `;
-//     catInfoElement.style.display = 'block';
-
-//     // Ukrycie animacji ładowania po pomyślnym pobraniu informacji o kocie
-//     loaderElement.style.display = 'none';
-//   } catch (error) {
-//     // Wyświetlenie komunikatu błędu
-//     errorElement.style.display = 'block';
-//     console.error('Error fetching cat:', error);
-//   }
-// }
-
-// // Inicjalizacja pobierania listy ras przy załadowaniu strony
-// fetchBreeds();
-
-// // Obsługa zmiany wyboru rasy kotów
-// selectElement.addEventListener('change', event => {
-//   const breedId = event.target.value;
-//   fetchCatByBreed(breedId);
-// });
+    // Ukrycie animacji ładowania po pomyślnym pobraniu informacji o kocie
+    loaderElement.style.display = 'none';
+    catInfoElement.style.display = 'block';
+  } catch (error) {
+    // Wyświetlenie komunikatu błędu
+    errorElement.style.display = 'block';
+    console.error('Error fetching cat info:', error);
+  }
+}
