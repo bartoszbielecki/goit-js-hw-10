@@ -16,6 +16,9 @@ async function fetchBreeds() {
     errorElement.style.display = 'none';
     catInfoElement.style.display = 'none';
 
+    // Dodanie nagłówka X-api-key do każdego żądania
+    axios.defaults.headers.common['X-api-key'] = API_KEY;
+
     const response = await axios.get('https://api.thecatapi.com/v1/breeds');
     const breeds = response.data;
 
@@ -70,3 +73,9 @@ async function fetchCatByBreed(breedId) {
     console.error('Error fetching cat info:', error);
   }
 }
+
+// Obsługa zdarzenia onchange dla rozwijanej listy
+selectElement.addEventListener('change', function () {
+  const breedId = this.value;
+  fetchCatByBreed(breedId);
+});

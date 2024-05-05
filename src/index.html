@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Homework 10</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="container">
       <div class="select-container">
-        <select
-          class="breed-select"
-          id="breed-select"
-          onchange="fetchCatByBreed(this.value)"
-        >
+        <select class="breed-select" id="breed-select">
           <option value="">Choose a breed</option>
         </select>
       </div>
@@ -23,6 +25,18 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script src="index.js" type="module"></script>
+    <script src="index.js" type="module" defer></script>
+    <script>
+      // Funkcja, która zostanie wywołana po załadowaniu skryptu index.js
+      function initializeSelect() {
+        // Obsługa zdarzenia onchange dla rozwijanej listy
+        document
+          .getElementById('breed-select')
+          .addEventListener('change', function () {
+            const breedId = this.value;
+            fetchCatByBreed(breedId);
+          });
+      }
+    </script>
   </body>
 </html>
