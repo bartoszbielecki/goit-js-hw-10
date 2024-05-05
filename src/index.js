@@ -59,14 +59,16 @@ async function fetchCatByBreed(breedId) {
     // Wyświetlenie informacji o kocie
     catInfoElement.innerHTML = `
       <img src="${catData.url}" alt="Cat Image">
-      <p><strong>Breed:</strong> ${catData.breeds[0].name}</p>
-      <p><strong>Description:</strong> ${catData.breeds[0].description}</p>
-      <p><strong>Temperament:</strong> ${catData.breeds[0].temperament}</p>
+      <div class="cat-info-elements">
+      <h3>Breed:</h3><p>${catData.breeds[0].name}</p>
+      <h3>Description:</h3><p>${catData.breeds[0].description}</p>
+      <h3>Temperament:</h3><p>${catData.breeds[0].temperament}</p>
+      </div>
     `;
 
     // Ukrycie animacji ładowania po pomyślnym pobraniu informacji o kocie
     loaderElement.style.display = 'none';
-    catInfoElement.style.display = 'block';
+    catInfoElement.style.display = 'flex';
   } catch (error) {
     // Wyświetlenie komunikatu błędu
     errorElement.style.display = 'block';
